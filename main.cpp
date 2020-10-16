@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	pcap_t* pcap_filter = pcap_open_dead(pcap_datalink(pcap), 1);
-	bpf_program* code = code = static_cast<bpf_program*>(malloc(sizeof(bpf_program)));
+	bpf_program* code = static_cast<bpf_program*>(malloc(sizeof(bpf_program)));
 	std::string filter = "udp port 53";
 	int res = pcap_compile(pcap_filter, code, filter.c_str(), 1, 0xFFFFFFFF);
 	if (res < 0) {
@@ -52,4 +52,21 @@ int main(int argc, char* argv[]) {
 		pcap_dump(reinterpret_cast<u_char*>(dumper), header, packet);
 	}
 
+	if (pcap_filter != nullptr) {
+		pcap_close(pcap_filter);
+		pcap_filter = nullptr;
+	}
+	if (code != nullptr) {
+		pcap_freecode(code);
+		free(code);
+		code = nullptr;
+	}
+	if (dumper != nullptr) {
+		pcap_dump_close(dumper);
+		dumper = nullptr;
+	}
+	if (pcap != nullptr) {
+		pcap_close(pcap);
+		pcap = nullptr;
+	}
 }
