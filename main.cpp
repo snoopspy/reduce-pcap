@@ -46,9 +46,8 @@ int main(int argc, char* argv[]) {
 		if (i == 0) continue;
 		if (i == -1 || i == -2) break;
 		bool filtered = bpf_filter(code->bf_insns, packet, header->len, header->caplen) > 0;
-		if (!filtered) {
+		if (!filtered && header->caplen > 54)
 			header->caplen = 54;
-		}
 		pcap_dump(reinterpret_cast<u_char*>(dumper), header, packet);
 	}
 
